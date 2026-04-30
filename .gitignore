@@ -200,6 +200,13 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+# Local workspace (plans, debug); track selectively with `git add -f` if needed.
+.cursor/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
 
 # Marimo
 marimo/_static/

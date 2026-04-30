@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lillabo-calculator"
+version = "0.1.0"
+description = "PoC CLI: enumerate closed LILLABO track loops from a fixed inventory"
+readme = "README.md"
+requires-python = ">=3.13"
+license = { file = "LICENSE" }
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+lillabo = "lillabo_calculator.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lillabo_calculator"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/lillabo_calculator", "README.md", "LICENSE"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["slow: full two-set enumeration (can be expensive)"]
