@@ -20,6 +20,15 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--max-solutions", type=int, default=100)
     p.add_argument("--max-nodes", type=int, default=5_000_000, help="Backtracking step budget (aborts search when exceeded).")
     p.add_argument("--bridge-unit", type=float, default=2.0)
+    p.add_argument(
+        "--strict-golden",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help=(
+            "Require exact two-set golden inventory "
+            "(l1=1,l2=2,s1=2,b1=4,cw+ccw=24), while allowing all-zero no-op."
+        ),
+    )
     return p
 
 
@@ -32,6 +41,7 @@ def main(argv: list[str] | None = None) -> int:
             max_solutions=max(1, args.max_solutions),
             bridge_unit=float(args.bridge_unit),
             max_nodes=max(1, args.max_nodes),
+            strict_golden=bool(args.strict_golden),
         )
         res = run(cfg)
     except ValueError as e:

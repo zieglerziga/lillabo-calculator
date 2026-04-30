@@ -22,6 +22,7 @@ Flags:
 
 - `--l1`, `--l2`, `--s1`, `--b1`: straight/bridge counts.
 - `--cw`, `--ccw`: how many of the pooled curve pieces are placed with CW vs CCW bend (same 45° family; orientation only).
+- `--strict-golden` / `--no-strict-golden` (default `--strict-golden`): require the golden two-set inventory `l1=1,l2=2,s1=2,b1=4,cw+ccw=24`, while still allowing all-zero no-op input.
 - `--max-solutions` (default **100**): cap on **distinct** solutions after canonical deduplication.
 - `--max-nodes` (default **5_000_000**): backtracking step budget (search aborts when exceeded).
 - `--bridge-unit` (default **2.0**): topology length of B1 in multiples of the L2 straight unit (closure layer), **not** L1+L2 cm.
@@ -42,6 +43,12 @@ Example matching the golden multiset:
 
 ```bash
 lillabo --l1 1 --l2 2 --s1 2 --b1 4 --cw 12 --ccw 12 --max-solutions 5 --max-nodes 200000
+```
+
+For exploratory non-golden runs:
+
+```bash
+lillabo --no-strict-golden --cw 8 --max-solutions 5
 ```
 
 The full two-set search space is large; raise `--max-nodes` (and time) for deeper exploration.

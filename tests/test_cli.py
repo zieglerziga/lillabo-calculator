@@ -12,6 +12,7 @@ def test_parser_defaults_match_cli_contract() -> None:
     assert args.max_solutions == 100
     assert args.max_nodes == 5_000_000
     assert args.bridge_unit == 2.0
+    assert args.strict_golden is True
 
 
 def test_cli_negative_inventory_reports_error_to_stderr(capsys) -> None:
@@ -22,8 +23,24 @@ def test_cli_negative_inventory_reports_error_to_stderr(capsys) -> None:
     assert captured.err.startswith("error: l1 must be non-negative")
 
 
+def test_cli_zero_inventory_is_valid_noop(capsys) -> None:
+    rc = main([])
+    captured = capsys.readouterr()
+    assert rc == 0
+    assert captured.out == ""
+    assert captured.err == ""
+
+
+def test_cli_strict_golden_rejects_non_golden_inventory(capsys) -> None:
+    rc = main(["--cw", "1"])
+    captured = capsys.readouterr()
+    assert rc == 2
+    assert captured.out == ""
+    assert "strict golden inventory requires" in captured.err
+
+
 def test_cli_prints_solution_block_for_simple_octagon(capsys) -> None:
-    rc = main(["--cw", "8", "--max-solutions", "1", "--max-nodes", "100000"])
+    rc = main(["--no-strict-golden", "--cw", "8", "--max-solutions", "1", "--max-nodes", "100000"])
     captured = capsys.readouterr()
     assert rc == 0
     assert captured.err == ""

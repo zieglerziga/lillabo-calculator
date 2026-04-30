@@ -4,7 +4,7 @@ from lillabo_calculator.dedup import canonical_layout_code, unique_solutions
 from lillabo_calculator.geometry import default_topology_spec
 from lillabo_calculator.inventory import Inventory, PieceToken
 from lillabo_calculator.solution import Solution
-from lillabo_calculator.solver import enumerate_loops
+from lillabo_calculator.solver import _has_self_intersection, enumerate_loops
 from lillabo_calculator.state import TurtleState
 
 
@@ -98,3 +98,9 @@ def test_canonical_code_invariant_over_transform_orbit() -> None:
     codes = {canonical_layout_code(sol) for sol in variants}
     assert len(codes) == 1
     assert len(unique_solutions(variants)) == 1
+
+
+def test_solver_returns_simple_loops_only() -> None:
+    inv = Inventory(0, 0, 0, 0, 8, 8)
+    raw = enumerate_loops(inv, default_topology_spec(), max_solutions=16, max_nodes=200_000)
+    assert all(not _has_self_intersection(list(sol.states)) for sol in raw)
