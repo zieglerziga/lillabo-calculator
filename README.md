@@ -70,6 +70,20 @@ pytest
 pytest -m "not slow"
 ```
 
+## GitHub Actions
+
+The repository includes four workflows:
+
+- `CI` (`.github/workflows/ci.yml`): Ruff linting, fast pytest run (`-m "not slow"`), CLI smoke check, and package build verification.
+- `Secret Scan (TruffleHog)` (`.github/workflows/secrets-trufflehog.yml`): PR/push secret scanning plus weekly full-history scan.
+- `SonarCloud` (`.github/workflows/sonarcloud.yml`): pytest coverage + SonarCloud scan with quality gate wait.
+- `Slow Test Suite` (`.github/workflows/nightly-slow-tests.yml`): weekly/manual full pytest run.
+
+SonarCloud workflow prerequisites:
+
+- Repository secret: `SONAR_TOKEN`
+- Repository variables: `SONAR_ORGANIZATION`, `SONAR_PROJECT_KEY`
+
 ## License
 
 See [LICENSE](LICENSE).
