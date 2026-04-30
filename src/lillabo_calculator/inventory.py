@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum, auto
 
+from lillabo_calculator._debug_log import emit_debug_log
+
 
 class PieceToken(Enum):
     """Placed piece tokens for v1 (X1 excluded from enumeration)."""
@@ -64,10 +66,74 @@ class Inventory:
         return out
 
 
-def validate_inventory(inv: Inventory) -> None:
+def _is_zero_inventory(inv: Inventory) -> bool:
+    return (inv.l1 + inv.l2 + inv.s1 + inv.b1 + inv.cw + inv.ccw) == 0
+
+
+def _matches_strict_golden_inventory(inv: Inventory) -> bool:
+    return (
+        inv.l1 == GOLDEN_TWO_SET_L1
+        and inv.l2 == GOLDEN_TWO_SET_L2
+        and inv.s1 == GOLDEN_TWO_SET_S1
+        and inv.b1 == GOLDEN_TWO_SET_B1
+        and inv.total_curves == GOLDEN_TWO_SET_CURVES
+    )
+
+
+def validate_inventory(inv: Inventory, *, strict_golden: bool = False) -> None:
+    # region agent log
+    emit_debug_log(
+        hypothesis_id="H3",
+        location="inventory.py:validate_inventory",
+        message="inventory_validation_called",
+        data={
+            "l1": inv.l1,
+            "l2": inv.l2,
+            "s1": inv.s1,
+            "b1": inv.b1,
+            "cw": inv.cw,
+            "ccw": inv.ccw,
+        },
+    )
+    # endregion
     if inv.total_curves == 0 and any(x > 0 for x in (inv.l1, inv.l2, inv.s1, inv.b1)):
         msg = "curve counts are zero but straights/bridge are present"
         raise ValueError(msg)
+    if not strict_golden:
+        return
+    if _is_zero_inventory(inv):
+        # region agent log
+        emit_debug_log(
+            hypothesis_id="H3",
+            location="inventory.py:validate_inventory",
+            message="strict_golden_zero_inventory_allowed",
+            data={"strict_golden": strict_golden},
+        )
+        # endregion
+        return
+    if _matches_strict_golden_inventory(inv):
+        # region agent log
+        emit_debug_log(
+            hypothesis_id="H3",
+            location="inventory.py:validate_inventory",
+            message="strict_golden_inventory_matched",
+            data={"strict_golden": strict_golden},
+        )
+        # endregion
+        return
+    # region agent log
+    emit_debug_log(
+        hypothesis_id="H3",
+        location="inventory.py:validate_inventory",
+        message="strict_golden_inventory_rejected",
+        data={"strict_golden": strict_golden},
+    )
+    # endregion
+    msg = (
+        "strict golden inventory requires l1=1, l2=2, s1=2, b1=4 and cw+ccw=24 "
+        "(or all-zero no-op inventory)"
+    )
+    raise ValueError(msg)
 
 
 GOLDEN_TWO_SET_L1 = 1

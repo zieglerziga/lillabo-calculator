@@ -36,6 +36,19 @@ def test_validate_inventory_accepts_curves_only() -> None:
     validate_inventory(Inventory(l1=0, l2=0, s1=0, b1=0, cw=8, ccw=0))
 
 
+def test_validate_inventory_strict_golden_accepts_zero_noop() -> None:
+    validate_inventory(Inventory(l1=0, l2=0, s1=0, b1=0, cw=0, ccw=0), strict_golden=True)
+
+
+def test_validate_inventory_strict_golden_accepts_golden_counts() -> None:
+    validate_inventory(golden_two_set_inventory(12, 12), strict_golden=True)
+
+
+def test_validate_inventory_strict_golden_rejects_non_golden_counts() -> None:
+    with pytest.raises(ValueError, match="strict golden inventory"):
+        validate_inventory(Inventory(l1=0, l2=0, s1=0, b1=0, cw=8, ccw=0), strict_golden=True)
+
+
 def test_remaining_tokens_are_deterministically_ordered() -> None:
     inv = Inventory(l1=1, l2=1, s1=1, b1=1, cw=1, ccw=1)
     assert inv.remaining_tokens() == [
