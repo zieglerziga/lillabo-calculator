@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from collections import Counter
 
-from lillabo_calculator._debug_log import emit_debug_log
 from lillabo_calculator.geometry import TopologySpec
 from lillabo_calculator.inventory import Inventory, PieceToken
 from lillabo_calculator.solution import Solution
@@ -129,29 +128,8 @@ def enumerate_loops(
         if sum(ctr.values()) == 0:
             closed = is_closed(start, state)
             self_intersects = _has_self_intersection(states) if path else False
-            # region agent log
-            emit_debug_log(
-                hypothesis_id="H1_H2",
-                location="solver.py:backtrack_leaf",
-                message="leaf_candidate_evaluated",
-                data={
-                    "token_count": len(path),
-                    "is_closed": closed,
-                    "self_intersects": self_intersects,
-                    "accepted": closed,
-                },
-            )
-            # endregion
             accepted = bool(path) and closed and not self_intersects
             if accepted:
-                # region agent log
-                emit_debug_log(
-                    hypothesis_id="H2",
-                    location="solver.py:backtrack_leaf",
-                    message="leaf_candidate_appended",
-                    data={"token_count": len(path), "self_intersects": self_intersects},
-                )
-                # endregion
                 out.append(Solution(tokens=tuple(path), states=tuple(states)))
             return
         for tok in _branch_tokens(ctr):

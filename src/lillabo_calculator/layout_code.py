@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Sequence
 
-from lillabo_calculator._debug_log import emit_debug_log
 from lillabo_calculator.inventory import PieceToken
 from lillabo_calculator.solution import Solution
 
@@ -31,14 +30,6 @@ def layout_code_from_vertices(
 ) -> str:
     """ verts[i] -> verts[i+1] uses tokens[i]; verts[n] should equal verts[0] implicitly (len n cycle). """
     n = len(tokens)
-    # region agent log
-    emit_debug_log(
-        hypothesis_id="H1",
-        location="layout_code.py:layout_code_from_vertices",
-        message="layout_code_called",
-        data={"token_count": n, "vertex_count": len(verts)},
-    )
-    # endregion
     if len(verts) != n:
         msg = "verts and tokens length mismatch"
         raise ValueError(msg)
